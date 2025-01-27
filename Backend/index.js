@@ -1,14 +1,17 @@
 const express = require("express");
 const morgan = require("morgan"); // 3.7 morgan käyttöön npm installin jälkeen
-const cors = require("cors"); 
+const cors = require("cors");
 const app = express();
 
 app.use(express.json());
-app.use(cors()); 
+app.use(express.static("dist"));
+app.use(cors());
 // app.use(morgan("tiny")); // 3.7 morganin tiny-konfiguraatio
 
 morgan.token("body", (req, res) => JSON.stringify(req.body)); // 3.8 luodaan body-token
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body')); // 3.8 tiny + body
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+); // 3.8 tiny + body
 
 let persons = [
   {
@@ -68,7 +71,8 @@ app.delete("/api/persons/:id", (request, response) => {
 
 const generateId = (persons) => {
   const randomId = Math.floor(Math.random() * 1000) + 1; //3.5 ehkä 1-1000 on riittävän iso arvoväli?
-  if (persons.some(person => person.id === randomId)) { //varmistetaan, että listalla ei ole jo samalla ID:llä henkilöä
+  if (persons.some((person) => person.id === randomId)) {
+    //varmistetaan, että listalla ei ole jo samalla ID:llä henkilöä
     return generateId(persons); //rekursio jos on!
   }
   return String(randomId);
@@ -77,13 +81,15 @@ const generateId = (persons) => {
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
-  if (!body.name || !body.number) { // 3.6 error jos nimi tai numero puuttuu
+  if (!body.name || !body.number) {
+    // 3.6 error jos nimi tai numero puuttuu
     return response.status(400).json({
       error: "name or number missing",
     });
   }
 
-  if (persons.some(person => person.name === body.name)) { // 3.6 error jos nimi on jo luottelossa
+  if (persons.some((person) => person.name === body.name)) {
+    // 3.6 error jos nimi on jo luottelossa
     return response.status(409).json({
       error: "name must be unique",
     });
@@ -100,7 +106,7 @@ app.post("/api/persons", (request, response) => {
   response.json(person);
 });
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+  console.log(`Server running on port ${PORT}`);
+});
