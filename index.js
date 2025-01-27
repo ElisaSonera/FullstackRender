@@ -1,7 +1,12 @@
 const express = require("express");
+const morgan = require("morgan"); // 3.7 morgan käyttöön npm installin jälkeen
 const app = express();
 
 app.use(express.json());
+// app.use(morgan("tiny")); // 3.7 morganin tiny-konfiguraatio
+
+morgan.token("body", (req, res) => JSON.stringify(req.body)); // 3.8 luodaan body-token
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body')); // 3.8 tiny + body
 
 let persons = [
   {
@@ -70,13 +75,13 @@ const generateId = (persons) => {
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
-  if (!body.name || !body.number) {
+  if (!body.name || !body.number) { // 3.6 error jos nimi tai numero puuttuu
     return response.status(400).json({
       error: "name or number missing",
     });
   }
 
-  if (persons.some(person => person.name === body.name)) {
+  if (persons.some(person => person.name === body.name)) { // 3.6 error jos nimi on jo luottelossa
     return response.status(409).json({
       error: "name must be unique",
     });
