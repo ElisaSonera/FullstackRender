@@ -5,7 +5,7 @@ const Filter = ({ handleFilterChange }) => {
         filter shown with <input onChange={handleFilterChange} />
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default Filter;
+export default Filter

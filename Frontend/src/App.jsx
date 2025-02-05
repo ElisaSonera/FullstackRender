@@ -1,62 +1,65 @@
-import { useState, useEffect } from "react";
-import Filter from "./components/Filter";
-import PersonForm from "./components/PersonForm";
-import Persons from "./components/Persons";
-import personService from "./services/persons";
-import Notification from "./components/Notification";
-import "./index.css";
+import { useState, useEffect } from 'react'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
+import personService from './services/persons'
+import Notification from './components/Notification'
+import './index.css'
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
-  const [newName, setNewName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [showAll, setShowAll] = useState(true);
-  const [filter, setFilter] = useState("");
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [persons, setPersons] = useState([])
+  const [newName, setNewName] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [showAll, setShowAll] = useState(true)
+  const [filter, setFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
-      setPersons(initialPersons);
-    });
-  }, []);
+      setPersons(initialPersons)
+    })
+  }, [])
 
   const addPerson = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     const personObject = {
       name: newName,
-      number: phoneNumber,
-    };
+      number: phoneNumber
+    }
 
     if (personExists(personObject)) {
       const foundPerson = persons.find(
         (person) => person.name === personObject.name
-      );
-      foundPerson.number = personObject.number;
-      updatePerson(foundPerson.id, foundPerson);
+      )
+      foundPerson.number = personObject.number
+      updatePerson(foundPerson.id, foundPerson)
     } else {
-      personService.create(personObject).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewName("");
-        setPhoneNumber("");
-        setSuccessMessage(`Added ${personObject.name}`);
-        setTimeout(() => {
-          setSuccessMessage(null);
-        }, 4000);
-      }).catch((error) => {
-        console.log(error.response.data.error);
-        setErrorMessage(error.response.data.error);
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 4000);
-      });
+      personService
+        .create(personObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setPhoneNumber('')
+          setSuccessMessage(`Added ${personObject.name}`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 4000)
+        })
+        .catch((error) => {
+          console.log(error.response.data.error)
+          setErrorMessage(error.response.data.error)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 4000)
+        })
     }
-  };
+  }
 
   const personExists = (personObject) => {
-    return persons.some((person) => person.name === personObject.name);
-  };
+    return persons.some((person) => person.name === personObject.name)
+  }
 
   const updatePerson = (id, personObject) => {
     if (
@@ -71,61 +74,61 @@ const App = () => {
             persons.map((person) =>
               person.id !== id ? person : returnedPerson
             )
-          );
-          setSuccessMessage(`Updated ${personObject.name}s phonenumber`);
+          )
+          setSuccessMessage(`Updated ${personObject.name}s phonenumber`)
           setTimeout(() => {
-            setSuccessMessage(null);
-          }, 4000);
+            setSuccessMessage(null)
+          }, 4000)
         })
         .catch(() => {
           setErrorMessage(
             `Information of ${personObject.name} has already been removed from server`
-          );
+          )
           setTimeout(() => {
-            setErrorMessage(null);
-          }, 4000);
-        });
+            setErrorMessage(null)
+          }, 4000)
+        })
     }
-    return;
-  };
+    return
+  }
 
   const handlePersonChange = (event) => {
-    console.log("Handle person: ", event.target.value);
-    setNewName(event.target.value);
-  };
+    console.log('Handle person: ', event.target.value)
+    setNewName(event.target.value)
+  }
 
   const handlePhoneNumber = (event) => {
-    console.log("Handle number: ", event.target.value);
-    setPhoneNumber(event.target.value);
-  };
+    console.log('Handle number: ', event.target.value)
+    setPhoneNumber(event.target.value)
+  }
 
   const handleFilterChange = (event) => {
-    setFilter(event.target.value);
-    setShowAll(false);
-  };
+    setFilter(event.target.value)
+    setShowAll(false)
+  }
 
   const personsToShow = showAll
     ? persons
     : persons.filter((person) =>
         person.name.toLowerCase().includes(filter.toLowerCase())
-      );
+      )
 
   const deletePerson = (id) => {
-    const person = persons.find((n) => n.id === id);
+    const person = persons.find((n) => n.id === id)
     if (window.confirm(`Delete ${person.name} ?`)) {
       personService
         .deletePerson(id)
         .then(() => {
-          setPersons(persons.filter((p) => p.id !== id));
-          setSuccessMessage(`Deleted ${person.name}`);
+          setPersons(persons.filter((p) => p.id !== id))
+          setSuccessMessage(`Deleted ${person.name}`)
           setTimeout(() => {
-            setSuccessMessage(null);
-          }, 4000);
+            setSuccessMessage(null)
+          }, 4000)
         })
-        .catch((error) => console.log("Deletion failed: ", error));
+        .catch((error) => console.log('Deletion failed: ', error))
     }
-    return;
-  };
+    return
+  }
 
   return (
     <div>
@@ -150,7 +153,7 @@ const App = () => {
 
       <Persons personsToShow={personsToShow} deletePerson={deletePerson} />
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
